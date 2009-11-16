@@ -10,6 +10,26 @@ from proximobus.service import Response
 
 formatters = {}
 
+def formatter_for_request(request):
+    format = request.format
+    if format == "js":
+        # js is special because it has a callback
+        try:
+            callback_func_name = request.query_args["callback"][0]
+            del request.query_args["callback"]
+        except KeyError:
+            callback_func_name = "callback"
+            
+        def format_js_wrapper(obj):
+            return format_js(obj, callback_func_name)
+
+        return format_js_wrapper
+    else:
+        try:
+            return formatters[format]
+        except KeyError:
+            return None
+
 
 def format_json(obj):
     # FIXME: Should turn the key names into camel case, since that's more JSONy
@@ -22,14 +42,12 @@ def format_json(obj):
 formatters["json"] = format_json
 
 
-def format_js(obj):
+def format_js(obj, callback_func_name):
     ret = format_json(obj)
-    callback_func = "callback"
     ret.content_type = "text/javascript"
-    ret.content = "%s(%s)" % (callback_func, ret.content)
+    ret.content = "%s(%s)" % (callback_func_name, ret.content)
     return ret
 
-formatters["js"] = format_js
 
 
 KML_PREFIX = "{http://www.opengis.net/kml/2.2}"

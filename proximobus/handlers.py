@@ -1,5 +1,5 @@
 
-from proximobus.formatters import formatters
+from proximobus import formatters
 from proximobus import service
 from proximobus import model
 from proximobus.model.meta import Object, PrimitiveField, ObjectField
@@ -10,9 +10,8 @@ nextbus._cache = memcache
 
 def handle_request(request):
 
-    try:
-        formatter = formatters[request.format]
-    except KeyError:
+    formatter = formatters.formatter_for_request(request)
+    if formatter is None:
         raise service.NotFoundError()
 
     path_chunks = request.path_chunks
@@ -20,6 +19,9 @@ def handle_request(request):
 
     if len(path_chunks) == 0:
         raise service.NotFoundError()
+
+    if len(request.query_args) > 0:
+        raise service.BadRequestError("Unsupported query args")
 
     num_chunks = len(path_chunks)
 

@@ -1,15 +1,22 @@
 
 from os import environ
+from cgi import parse_qs
 
 class Request:
     format = None
     path_chunks = None
+    query_args = None
 
     @classmethod
     def from_cgi_environment(cls):
         self = cls()
         if environ["REQUEST_METHOD"] != "GET":
             raise MethodNotAllowedError()
+
+        if "QUERY_STRING" in environ:
+            self.query_args = parse_qs(environ["QUERY_STRING"])
+        else:
+            self.query_args = {}
         
         uri = environ["PATH_INFO"]
         parts = uri.split(".")
@@ -32,6 +39,10 @@ class Response:
 
 class HTTPError(Exception):
     status = 500
+
+
+class BadRequestError(HTTPError):
+    status = 400
 
 
 class NotFoundError(HTTPError):
