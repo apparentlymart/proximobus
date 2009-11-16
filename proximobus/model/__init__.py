@@ -67,10 +67,27 @@ class Stop(Object):
     latitude = PrimitiveField(float)
     longitude = PrimitiveField(float)
 
+    @classmethod
+    def from_nextbus(cls, nb_stop):
+        ret = cls()
+        ret.id = nb_stop.tag
+        ret.display_name = nb_stop.title
+        ret.latitude = nb_stop.latitude
+        ret.longitude = nb_stop.longitude
+        return ret
+
 
 class StopOnRoute(Stop):
     primary_run_id = PrimitiveField(str)
 
+    @classmethod
+    def from_nextbus(cls, nb_stop):
+        supe = Stop.from_nextbus(nb_stop)
+        ret = cls()
+        ret.__dict__ = supe.__dict__
+        ret.primary_run_id = nb_stop.direction_tag
+        return ret
+    
 
 class Vehicle(Object):
     id = PrimitiveField(str)

@@ -32,6 +32,13 @@ def handle_request(request):
                     route_id = path_chunks[3]
                     if len(path_chunks) == 4:
                         ret = handle_route(agency_id, route_id)
+                    elif path_chunks[4] == "stops":
+                        if len(path_chunks) == 5:
+                            ret = handle_route_stops(agency_id, route_id)
+                        else:
+                            stop_id = path_chunks[5]
+                            if len(path_chunks) == 6:
+                                ret = handle_route_stop(agency_id, route_id, stop_id)
                     
 
     if ret is None:
@@ -61,3 +68,15 @@ def handle_route(agency_id, route_id):
     route_config = nextbus.get_route_config(agency_id, route_id)
     return model.Route.from_nextbus(route_config)
 
+def handle_route_stops(agency_id, route_id):
+    route_config = nextbus.get_route_config(agency_id, route_id)
+    stops = map(lambda nb_s : model.StopOnRoute.from_nextbus(nb_s), route_config.stops)
+    return model.List(ObjectField(model.Stop))(stops)
+    
+def handle_route_stop(agency_id, route_id, stop_id):
+    route_config = nextbus.get_route_config(agency_id, route_id)
+    for nb_s in route_config.stops:
+        if nb_s.tag == stop_id:
+            return model.StopOnRoute.from_nextbus(nb_s)
+    raise service.NotFoundError()
+    
