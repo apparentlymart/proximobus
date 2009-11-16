@@ -83,6 +83,11 @@ class RunOnRoute(Run):
         ret.__dict__ = supe.__dict__
         ret.display_in_ui = nb_dir.use_for_ui
         return ret
+
+
+class StopRef(Object):
+    id = PrimitiveField(str)
+    title = PrimitiveField(str)
     
 
 class Stop(Object):
@@ -94,7 +99,7 @@ class Stop(Object):
     @classmethod
     def from_nextbus(cls, nb_stop):
         ret = cls()
-        ret.id = nb_stop.tag
+        ret.id = nb_stop.stop_id
         ret.display_name = nb_stop.title
         ret.latitude = nb_stop.latitude
         ret.longitude = nb_stop.longitude

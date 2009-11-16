@@ -61,6 +61,20 @@ def handle_request(request):
                     vehicle_id = path_chunks[3]
                     if num_chunks == 4:
                         ret = handle_single_vehicle(agency_id, vehicle_id)
+            elif path_chunks[2] == "stops":
+                if num_chunks == 3:
+                    # There is no endpoint to retrieve a list of all stops across a whole agency
+                    raise service.NotFoundError()
+                else:
+                    stop_id = path_chunks[3]
+                    if num_chunks == 4:
+                        ret = handle_single_stop(agency_id, stop_id)
+                    elif path_chunks[4] == "messages":
+                        if num_chunks == 5:
+                            ret = handle_stop_messages(agency_id, stop_id)
+                    elif path_chunks[4] == "routes":
+                        if num_chunks == 5:
+                            ret = handle_stop_routes(agency_id, stop_id)
                     
 
     if ret is None:
@@ -135,4 +149,39 @@ def handle_single_vehicle(agency_id, vehicle_id):
         if nb_v.id == vehicle_id:
             return model.Vehicle.from_nextbus(nb_v)
     return None
+
+def handle_single_stop(agency_id, stop_id):
+    nb_preds = nextbus.get_predictions_for_stop(agency_id, stop_id)
+    ret = model.StopRef()
+    ret.title = nb_preds.stop_title
+    ret.id = stop_id
+    if ret.title is not None:
+        return ret
+    else:
+        return None
+
+
+def handle_stop_messages(agency_id, stop_id):
+    nb_preds = nextbus.get_predictions_for_stop(agency_id, stop_id)
+
+    if nb_preds.stop_title is None:
+        return None
+
+    return model.List(PrimitiveField(str))(nb_preds.messages)
+
+
+def handle_stop_routes(agency_id, stop_id):
+    nb_preds = nextbus.get_predictions_for_stop(agency_id, stop_id)
+
+    if nb_preds.stop_title is None:
+        return None
+
+    nb_routes = {}
+    for nb_d in nb_preds.directions:
+        nb_routes[nb_d.route.tag] = nb_d.route
+
+    routes = map(lambda nb_r : model.RouteRef.from_nextbus(nb_r), nb_routes.values())
+
+    return model.List(ObjectField(model.RouteRef))(routes)
+
 
