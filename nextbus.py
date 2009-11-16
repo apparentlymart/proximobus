@@ -264,6 +264,7 @@ class RouteConfig:
             direction.tag = direction_elem.get("tag")
             direction.title = direction_elem.get("title")
             direction.name = direction_elem.get("name")
+            direction.route = self.route
 
             if direction_elem.get("useForUI") == "true":
                 direction.use_for_ui = True

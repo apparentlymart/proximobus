@@ -60,6 +60,26 @@ class Run(Object):
     display_name = PrimitiveField(str)
     route_id = PrimitiveField(str)
 
+    @classmethod
+    def from_nextbus(cls, nb_dir):
+        ret = cls()
+        ret.id = nb_dir.tag
+        ret.display_name = nb_dir.title
+        ret.route_id = nb_dir.route.tag
+        return ret
+
+
+class RunOnRoute(Run):
+    display_in_ui = PrimitiveField(bool)
+
+    @classmethod
+    def from_nextbus(cls, nb_dir):
+        supe = Run.from_nextbus(nb_dir)
+        ret = cls()
+        ret.__dict__ = supe.__dict__
+        ret.display_in_ui = nb_dir.use_for_ui
+        return ret
+    
 
 class Stop(Object):
     id = PrimitiveField(str)
