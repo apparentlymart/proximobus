@@ -6,8 +6,12 @@ Classes defining the external data model of ProximoBus.
 from proximobus.model.meta import Object, PrimitiveField, ObjectField, ListField
 
 
+class _GenericList(Object):
+    pass
+
+
 def List(item_field):
-    class List(Object):
+    class List(_GenericList):
         items = ListField(item_field)
 
         def __init__(self, items):
