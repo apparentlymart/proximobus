@@ -2,6 +2,7 @@
 from django.utils import simplejson as json
 from xml.etree import ElementTree
 import StringIO
+import re
 
 from proximobus import service
 from proximobus import model
@@ -17,6 +18,9 @@ def formatter_for_request(request):
         try:
             callback_func_name = request.query_args["callback"][0]
             del request.query_args["callback"]
+            r = re.compile(r"^[\w\.]+$")
+            if not r.match(callback_func_name):
+                raise service.BadRequestError("Invalid callback function name")
         except KeyError:
             callback_func_name = "callback"
             
