@@ -78,7 +78,6 @@ def format_kml(obj):
     response = Response()
     response.content = output.getvalue()
     response.content_type = "application/vnd.google-earth.kml+xml"
-    response.content_type = "application/xml"
     return response
 
 formatters["kml"] = format_kml
