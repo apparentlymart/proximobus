@@ -4,6 +4,9 @@ from proximobus import service
 from proximobus import model
 from proximobus.model.meta import Object, PrimitiveField, ObjectField
 import nextbus
+from google.appengine.api import memcache
+
+nextbus._cache = memcache
 
 def handle_request(request):
 

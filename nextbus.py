@@ -2,6 +2,7 @@
 
 from xml.etree import ElementTree
 from urllib import urlencode
+import logging
 
 
 NEXTBUS_SERVICE_URL = "http://webservices.nextbus.com/service/publicXMLFeed"
@@ -82,7 +83,7 @@ def memoize_in_cache(key_name, expire_time):
             if _cache is not None:
                 if ret is not None:
                     cacheval = pickle.dumps(ret, 2)
-                    _cache.set(full_key_name, cacheval)
+                    _cache.set(full_key_name, cacheval, expire_time)
 
             return ret
         return func
