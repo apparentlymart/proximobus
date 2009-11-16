@@ -120,6 +120,19 @@ class Vehicle(Object):
     heading = PrimitiveField(float)
     leading_vehicle_id = PrimitiveField(str)
 
+    @classmethod
+    def from_nextbus(cls, nb_vehicle):
+        ret = cls()
+        ret.id = nb_vehicle.id
+        ret.latitude = nb_vehicle.latitude
+        ret.longitude = nb_vehicle.longitude
+        ret.route_id = nb_vehicle.route_tag
+        ret.run_id = nb_vehicle.direction_tag
+        ret.seconds_since_report = nb_vehicle.seconds_since_report
+        ret.predictable = nb_vehicle.predictable
+        ret.heading = nb_vehicle.heading
+        ret.leading_vehicle_id = nb_vehicle.leading_vehicle_id
+        return ret
 
 class Prediction(Object):
     run_id = PrimitiveField(str)

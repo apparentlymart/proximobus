@@ -51,6 +51,9 @@ def handle_request(request):
                             elif path_chunks[6] == "stops":
                                 if num_chunks == 7:
                                     ret = handle_route_run_stops(agency_id, route_id, run_id)
+                    elif path_chunks[4] == "vehicles":
+                        if num_chunks == 5:
+                            ret = handle_route_vehicles(agency_id, route_id)
                     
 
     if ret is None:
@@ -109,3 +112,8 @@ def handle_route_run_stops(agency_id, route_id, run_id):
     stops = map(lambda nb_s : model.StopOnRoute.from_nextbus(nb_s), route_config.directions_dict[run_id].stops)
     return model.List(ObjectField(model.Stop))(stops)
     
+def handle_route_vehicles(agency_id, route_id):
+    nb_vehicles = nextbus.get_vehicle_locations_on_route(agency_id, route_id)
+    vehicles = map(lambda nb_v : model.Vehicle.from_nextbus(nb_v), nb_vehicles)
+    return model.List(ObjectField(model.Vehicle))(vehicles)
+
