@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ProximoBus Documentation</title>
+</head>
+
+<body>
+<h1>ProximoBus Documentation</h1>
+
+<h2>Fundamentals</h2>
+
+<p>ProximoBus is a read-only REST API. Data is retrieved by sending an HTTP GET
+request to an appropriate URL. No authentication is required, and there are
+no write operations so you don't need to worry about PUT and POST.</p>
+
+<p>If you're using Firefox and you'd like to view the JSON examples in your
+browser, you may find it useful to install <a href="https://addons.mozilla.org/en-US/firefox/addon/10869">the JSONView add-on</a>.</p>
+
+<h2>Supported Data Formats</h2>
+
+<p>A response format is selected by appending an extension to the end of the endpoints described below.
+This is done by appending a period and then one of the format keywords from the table below.</p>
+
+<table border="1">
+  <tr>
+    <th>Keyword</th>
+    <th>MIME Type</th>
+    <th>Format Name</th>
+    <th>Remarks</th>
+  </tr>
+  <tr>
+    <td><tt>json</tt></td>
+    <td><tt>application/json</tt></td>
+    <td><a href="http://json.org/">JSON</a></td>
+    <td>This is the primary data format used by ProximoBus.</td>
+  </tr>
+  <tr>
+    <td><tt>js</tt></td>
+    <td><tt>text/javascript</tt></td>
+    <td>JavaScript</td>
+    <td>
+      Allows cross-site requests via the JSON-P convention.
+      Provide a <tt>callback</tt> query string argument containing the name
+      of your JavaScript callback function.
+    </td>
+  </tr>
+  <tr>
+    <td><tt>kml</tt></td>
+    <td><tt>application/vnd.google-earth.kml+xml</tt></td>
+    <td><a href="http://code.google.com/apis/kml/documentation/">KML</a></td>
+    <td>A geographical data format supported only for stops and vehicles. This format can be used to add a "Network Link" to <a href="http://earth.google.com/">Google Earth</a>. Only the location and a display name of the retrieved items are available at this time.</td>
+  </tr>
+</table>
+
+<h2>Data Endpoints</h2>
+
+
+
+<h3>List of agencies</h3>
+
+<p>URL: <tt>/agencies</tt></p>
+
+<p>Returns a list of agencies that can be queries via this API. Not all agencies
+that use NextBus are available; only a subset of agencies that have elected
+to make available a public data feed are accessible via the public NextBus endpoints
+that ProximoBus uses.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies.json">List of agencies in JSON</a></li>
+</ul>
+
+
+
+<h3>Properties of a specific agency</h3>
+
+<p>URL: <tt>/agencies/<var>id</var></tt></p>
+
+<p>Returns an object representing the single selected agency.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni.json">San Francisco Muni in JSON</a></li>
+</ul>
+
+
+
+<h3>List of routes for an agency</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/routes</tt></p>
+
+<p>Returns a list of routes operated by the selected agency. For some
+agencies only a subset of the available routes may be integrated
+with NextBus.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/routes.json">Routes operated by San Francisco Muni in JSON</a></li>
+</ul>
+
+
+
+<h3>Properties of a specific route</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/routes/<var>id</var></tt></p>
+
+<p>Returns an object representing the selected route.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/routes/N.json">Muni's N-Judah line in JSON</a></li>
+</ul>
+
+
+
+
+<h3>List of stops on a route</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/routes/<var>id</var>/stops</tt></p>
+
+<p>Returns a list of stops on the selected route. This list is the union
+of all stops serviced by all runs of this route, and is in no particular
+order. To get an ordered list of stops one must request the stops for
+a particular run.</p>
+
+<p>The stops for the two directions of a bidirectional route are often
+returned as two separate stops. However, sometimes a terminal
+of a route may be represented by the same stop in both directions.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/routes/F/stops.json">List of stops for Muni's F-Market&amp;Wharves line in JSON</a></li>
+  <li><a href="/agencies/sf-muni/routes/F/stops.kml">List of stops for Muni's F-Market&amp;Wharves line in KML</a></li>
+</ul>
+
+
+
+
+<h3>List of runs for a route</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/routes/<var>id</var>/runs</tt></p>
+
+<p>Returns a list of runs for the selected route. A run describes
+a sequence of stops between two terminals. Most routes have at
+least two runs, and many have additional runs used at specific
+times of day, such as when a vehicle does a short run when it is about
+to return to its garage.</p>
+
+<p>The primary runs that passengers think of as the standard sequence
+of stops for this route are indicated by the <tt>display_in_ui</tt> flag
+being set to true. If you're displaying a list of runs as part of
+a drill-down to predictions for a particular stop then you should
+generally show only the primary runs. The properties of the non-primary
+runs are useful for rendering destination information for predicted
+vehicles.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/routes/6/runs.json">List of runs for Muni's 6-Parnassus line in JSON</a></li>
+</ul>
+
+
+
+
+<h3>Properties of a specific run</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/routes/<var>id</var>/runs/<var>id</var></tt></p>
+
+<p>Returns an object representing the selected run.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/routes/J/runs/J__IBNOE.json">An unusual run for Muni's J-Church line in JSON</a></li>
+</ul>
+
+
+
+
+
+<h3>List of stops for a run</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/routes/<var>id</var>/runs/<var>id</var>/stops</tt></p>
+
+<p>Returns a list of stops for the selected run. The stops are returned in order
+of arrival, so the first and last items in the list are the run's terminals.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/routes/47/runs/47_OB/stops.json">List of stops that Muni's 47-Van Ness line visits on its outbound run in JSON</a></li>
+  <li><a href="/agencies/sf-muni/routes/47/runs/47_OB/stops.kml">List of stops that Muni's 47-Van Ness line visits on its outbound run in KML</a></li>
+</ul>
+
+
+
+
+
+
+<h3>List of vehicles on a route</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/routes/<var>id</var>/vehicles</tt></p>
+
+<p>Returns a list of vehicles that are currently assigned to the selected
+route. Some of the returned vehicles may actually be in a depot.</p>
+
+<p>The vehicles are returned in no particular order.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/routes/30/vehicles.json">Vehicles on Muni's 30-Stockton line in JSON</a></li>
+  <li><a href="/agencies/sf-muni/routes/30/vehicles.kml">Vehicles on Muni's 30-Stockton line in KML</a></li>
+</ul>
+
+
+
+
+
+
+
+<h3>Properties of a specific stop</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/stops/<var>id</var></tt></p>
+
+<p>Returns an object representing the selected stop. Due to limitations
+of the underlying NextBus data feed the location of the stop is not
+available at this endpoint.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/stops/13996.json">A stop at Church &amp; 24th from San Francisco in JSON</a></li>
+</ul>
+
+
+
+<h3>List of routes that serve a specific stop</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/stops/<var>id</var>/routes</tt></p>
+
+<p>Returns a list of all routes that serve the selected stop.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/stops/15417/routes.json">Routes serving Powell Muni Station in JSON</a></li>
+</ul>
+
+
+
+
+<h3>List of predicted arrivals for a specific stop</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/stops/<var>id</var>/predictions</tt></p>
+
+<p>Returns a list of predicted arrivals for the selected stop across all routes.
+The predictions are listed in order of expected arrival.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/stops/17217/predictions.json">Predicted arrivals for Embarcadero Muni Station in JSON</a></li>
+</ul>
+
+
+
+
+<h3>List of predicted arrivals for a specific route at specific stop</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/stops/<var>id</var>/predictions/by-route/<var>id</var></tt></p>
+
+<p>Returns a list of predicted arrivals for the selected stop including only
+vehicles from the selected route.
+The predictions are listed in order of expected arrival.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/stops/17217/predictions/by-route/L.json">Predicted arrivals for L-Taraval at Embarcadero Muni Station in JSON</a></li>
+</ul>
+
+
+
+
+<h3>List of all vehicles operated by an agency</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/vehicles</tt></p>
+
+<p>Returns a list of all vehicles operated by the selected agency
+which are being tracked by the NextBus system.</p>
+
+<p>In some cases vehicles show up in this list that are not
+currently active on any route. These should not generally
+be displayed to end-users to avoid confusion.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/vehicles.json">All of Muni's vehicles in JSON</a></li>
+  <li><a href="/agencies/sf-muni/vehicles.kml">All of Muni's vehicles in KML</a></li>
+</ul>
+
+
+
+
+<h3>Properties of a specific vehicle</h3>
+
+<p>URL: <tt>/agencies/<var>id</var>/vehicles/<var>id</var></tt></p>
+
+<p>Returns an object representing a specific vehicle. This endpoint
+will function only if the selected vehicle is being tracked
+by NextBus at the time of request.</p>
+
+<h4>Examples</h4>
+
+<ul>
+  <li><a href="/agencies/sf-muni/vehicles/1050.json">One of Muni's historic streetcars in JSON</a></li>
+  <li><a href="/agencies/sf-muni/vehicles/1050.kml">One of Muni's historic streetcars in KML</a></li>
+</ul>
+
+
+<h2>Accuracy of Data</h2>
+
+<p>Data retrieved from the underlying NextBus API is cached by ProximoBus. Static data including
+route and stop configurations is cached for up to one week after fetch, and may therefore take
+up to seven days to update when the underlying data changes. Vehicle location and preditiction
+data is cached for up to 30 seconds.</p>
+
+<p>No client should poll any ProximoBus endpoint more often than once every 30 seconds.</p>
+
+<h2>Disclaimer</h2>
+
+<p>This API is provided in the hope that it is useful, but there are no availability guarantees
+nor any warranty about the accuracy of the provided data. Use of this data is at the risk
+of the user.</p>
+
+<p>The author reserves the right to deny access to ProximoBus to anyone at any time and for
+any reason. While backward compatibility will be preserved as much as possible, the author
+reserves the right to change any aspect of the provided API at any time for any reason and with no
+notice.</p>
+
+<h2>Trademarks and Copyright</h2>
+
+<p>NextBus is a trademark of <a href="http://www.nextbus.com/corporate/">NextBus Inc.</a>.
+Muni is a trademark of <a href="http://www.sfmta.com/">San Francisco Municipal Transportation Agency</a>.
+All other trademarks are property of their respective owners.</p>
+
+<p>The data provided by this API is from a publically available data access API provided
+by NextBus. The author of ProximoBus does not claim any rights to this data, nor any
+right to sub-licence the data to users. Users of this API are subject to the terms and conditions
+of the underlying API.</p>
+
+<p>The data provided by this API is copyright either NextBus itself or the respective transit
+agencies.</p>
+
+<p>sfmta.com labs has <a href="http://www.sfmta.com/cms/asite/nextmunidata.htm">a guide to using the
+NextBus data feed with Muni</a>, including the terms and conditions of use. Users retrieving
+Muni data via ProximoBus must review the terms and conditions therein and comply with them
+when accessing the data either by the official NextBus API or via ProximoBus.</p>
+
+</body>
+</html>
