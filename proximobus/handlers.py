@@ -57,6 +57,10 @@ def handle_request(request):
             elif path_chunks[2] == "vehicles":
                 if num_chunks == 3:
                     ret = handle_agency_vehicles(agency_id)
+                else:
+                    vehicle_id = path_chunks[3]
+                    if num_chunks == 4:
+                        ret = handle_single_vehicle(agency_id, vehicle_id)
                     
 
     if ret is None:
@@ -124,4 +128,11 @@ def handle_agency_vehicles(agency_id):
     nb_vehicles = nextbus.get_all_vehicle_locations(agency_id)
     vehicles = map(lambda nb_v : model.Vehicle.from_nextbus(nb_v), nb_vehicles)
     return model.List(ObjectField(model.Vehicle))(vehicles)
+
+def handle_single_vehicle(agency_id, vehicle_id):
+    nb_vehicles = nextbus.get_all_vehicle_locations(agency_id)
+    for nb_v in nb_vehicles:
+        if nb_v.id == vehicle_id:
+            return model.Vehicle.from_nextbus(nb_v)
+    return None
 
