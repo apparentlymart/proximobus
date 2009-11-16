@@ -75,7 +75,13 @@ def handle_request(request):
                     elif path_chunks[4] == "routes":
                         if num_chunks == 5:
                             ret = handle_stop_routes(agency_id, stop_id)
-                    
+                    elif path_chunks[4] == "predictions":
+                        if num_chunks == 5:
+                            ret = handle_stop_predictions(agency_id, stop_id)
+                        elif path_chunks[5] == "by-route":
+                            if num_chunks == 7:
+                                route_id = path_chunks[6]
+                                ret = handle_stop_predictions(agency_id, stop_id, route_id)
 
     if ret is None:
         raise service.NotFoundError()
@@ -183,5 +189,21 @@ def handle_stop_routes(agency_id, stop_id):
     routes = map(lambda nb_r : model.RouteRef.from_nextbus(nb_r), nb_routes.values())
 
     return model.List(ObjectField(model.RouteRef))(routes)
+
+
+def handle_stop_predictions(agency_id, stop_id, route_id = None):
+    nb_preds = nextbus.get_predictions_for_stop(agency_id, stop_id)
+
+    if nb_preds.stop_title is None:
+        return None
+
+    if route_id is not None:
+        nb_preds = filter(lambda nb_p : nb_p.direction.route.tag == route_id, nb_preds.predictions)
+    else:
+        nb_preds = nb_preds.predictions
+
+    predictions = map(lambda nb_p : model.Prediction.from_nextbus(nb_p), nb_preds)
+
+    return model.List(ObjectField(model.Prediction))(predictions)
 
 

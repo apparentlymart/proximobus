@@ -144,7 +144,20 @@ class Vehicle(Object):
         return ret
 
 class Prediction(Object):
+    route_id = PrimitiveField(str)
     run_id = PrimitiveField(str)
     minutes = PrimitiveField(float)
+    seconds = PrimitiveField(float)
     is_departing = PrimitiveField(bool)
     block_id = PrimitiveField(str)
+
+    @classmethod
+    def from_nextbus(cls, nb_pred):
+        ret = cls()
+        ret.route_id = nb_pred.direction.route.tag
+        ret.run_id = nb_pred.direction.tag
+        ret.minutes = nb_pred.minutes
+        ret.seconds = nb_pred.seconds
+        ret.is_departing = nb_pred.is_departing
+        ret.block_id = nb_pred.block
+        return ret
