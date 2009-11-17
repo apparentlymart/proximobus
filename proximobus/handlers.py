@@ -164,9 +164,9 @@ def handle_single_vehicle(agency_id, vehicle_id):
 def handle_single_stop(agency_id, stop_id):
     nb_preds = nextbus.get_predictions_for_stop(agency_id, stop_id)
     ret = model.StopRef()
-    ret.title = nb_preds.stop_title
+    ret.display_name = nb_preds.stop_title
     ret.id = stop_id
-    if ret.title is not None:
+    if ret.display_name is not None:
         return ret
     else:
         return None

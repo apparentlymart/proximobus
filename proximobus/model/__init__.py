@@ -87,12 +87,12 @@ class RunOnRoute(Run):
 
 class StopRef(Object):
     id = PrimitiveField(str)
-    title = PrimitiveField(str)
+    display_name = PrimitiveField(str)
     
 
 class Stop(Object):
     id = PrimitiveField(str)
-    title = PrimitiveField(str)
+    display_name = PrimitiveField(str)
     latitude = PrimitiveField(float)
     longitude = PrimitiveField(float)
 
