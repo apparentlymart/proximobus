@@ -23,6 +23,12 @@ def formatter_for_request(request):
                 raise service.BadRequestError("Invalid callback function name")
         except KeyError:
             callback_func_name = "callback"
+
+        # JQuery insists on putting this random extra argument
+        # in when doing JSON-P and provides no obvious way to
+        # disable it, so let's just silently drop it.
+        if "_" in request.query_args:
+            del request.query_args["_"]
             
         def format_js_wrapper(obj):
             return format_js(obj, callback_func_name)
