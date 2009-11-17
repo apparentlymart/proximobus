@@ -67,7 +67,7 @@ function handleRoutesList(data) {
 
 
 function handleStopInfo(data) {
-    $("#stopname").text(data["title"]);
+    $("#stopname").text(data["display_name"]);
     gotStopInfo = true;
     startPolling();
 }
