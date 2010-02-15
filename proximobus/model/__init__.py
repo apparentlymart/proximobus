@@ -31,6 +31,14 @@ class Agency(Object):
         ret.display_name = nb_agency.title
         return ret
 
+    # BART is a special case because they don't use NextBus
+    @classmethod
+    def bart(cls):
+        ret = cls()
+        ret.id = "bart"
+        ret.display_name = "Bay Area Rapid Transit"
+        return ret
+
 
 class RouteRef(Object):
     id = PrimitiveField(str)
@@ -42,6 +50,14 @@ class RouteRef(Object):
         ret.id = nb_route.tag
         ret.display_name = nb_route.title
         return ret
+
+    @classmethod
+    def from_bart(cls, b_route):
+        ret = cls()
+        ret.id = b_route.number
+        ret.display_name = b_route.name
+        return ret
+
 
 class Route(Object):
     id = PrimitiveField(str)

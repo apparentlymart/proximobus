@@ -1,6 +1,4 @@
 
-from proximobus import formatters
-from proximobus import service
 from proximobus import model
 from proximobus.model.meta import Object, PrimitiveField, ObjectField
 import nextbus
@@ -8,102 +6,17 @@ from google.appengine.api import memcache
 
 nextbus._cache = memcache
 
-def handle_request(request):
-
-    formatter = formatters.formatter_for_request(request)
-    if formatter is None:
-        raise service.NotFoundError()
-
-    path_chunks = request.path_chunks
-    ret = None
-
-    if len(path_chunks) == 0:
-        raise service.NotFoundError()
-
-    if len(request.query_args) > 0:
-        raise service.BadRequestError("Unsupported query args")
-
-    num_chunks = len(path_chunks)
-
-    if path_chunks[0] == "agencies":
-        if num_chunks == 1:
-            ret = handle_agency_list()
-        else:
-            agency_id = path_chunks[1]
-            if num_chunks == 2:
-                ret = handle_agency(agency_id)
-            elif path_chunks[2] == "routes":
-                if num_chunks == 3:
-                    ret = handle_route_list(agency_id)
-                else:
-                    route_id = path_chunks[3]
-                    if num_chunks == 4:
-                        ret = handle_route(agency_id, route_id)
-                    elif path_chunks[4] == "stops":
-                        if num_chunks == 5:
-                            ret = handle_route_stops(agency_id, route_id)
-                        else:
-                            stop_id = path_chunks[5]
-                            if num_chunks == 6:
-                                ret = handle_route_stop(agency_id, route_id, stop_id)
-                    elif path_chunks[4] == "runs":
-                        if num_chunks == 5:
-                            ret = handle_route_runs(agency_id, route_id)
-                        else:
-                            run_id = path_chunks[5]
-                            if num_chunks == 6:
-                                ret = handle_route_run(agency_id, route_id, run_id)
-                            elif path_chunks[6] == "stops":
-                                if num_chunks == 7:
-                                    ret = handle_route_run_stops(agency_id, route_id, run_id)
-                    elif path_chunks[4] == "vehicles":
-                        if num_chunks == 5:
-                            ret = handle_route_vehicles(agency_id, route_id)
-            elif path_chunks[2] == "vehicles":
-                if num_chunks == 3:
-                    ret = handle_agency_vehicles(agency_id)
-                else:
-                    vehicle_id = path_chunks[3]
-                    if num_chunks == 4:
-                        ret = handle_single_vehicle(agency_id, vehicle_id)
-            elif path_chunks[2] == "stops":
-                if num_chunks == 3:
-                    # There is no endpoint to retrieve a list of all stops across a whole agency
-                    raise service.NotFoundError()
-                else:
-                    stop_id = path_chunks[3]
-                    if num_chunks == 4:
-                        ret = handle_single_stop(agency_id, stop_id)
-                    elif path_chunks[4] == "messages":
-                        if num_chunks == 5:
-                            ret = handle_stop_messages(agency_id, stop_id)
-                    elif path_chunks[4] == "routes":
-                        if num_chunks == 5:
-                            ret = handle_stop_routes(agency_id, stop_id)
-                    elif path_chunks[4] == "predictions":
-                        if num_chunks == 5:
-                            ret = handle_stop_predictions(agency_id, stop_id)
-                        elif path_chunks[5] == "by-route":
-                            if num_chunks == 7:
-                                route_id = path_chunks[6]
-                                ret = handle_stop_predictions(agency_id, stop_id, route_id)
-
-    if ret is None:
-        raise service.NotFoundError()
-
-    return formatter(ret)
-
-
-def handle_agency_list():
+def get_agencies():
     nextbus_agencies = nextbus.get_all_agencies()
     agencies = map(lambda nb_a : model.Agency.from_nextbus(nb_a), nextbus_agencies)
-    return model.List(ObjectField(model.Agency))(agencies)
+    return agencies
 
 def handle_agency(agency_id):
     nextbus_agencies = nextbus.get_all_agencies()
     for nb_a in nextbus_agencies:
         if nb_a.tag == agency_id:
             return model.Agency.from_nextbus(nb_a)
+    from proximobus import service
     raise service.NotFoundError()
 
 def handle_route_list(agency_id):
@@ -125,6 +38,7 @@ def handle_route_stop(agency_id, route_id, stop_id):
     for nb_s in route_config.stops:
         if nb_s.tag == stop_id:
             return model.StopOnRoute.from_nextbus(nb_s)
+    from proximobus import service
     raise service.NotFoundError()
     
 def handle_route_runs(agency_id, route_id):
@@ -137,6 +51,7 @@ def handle_route_run(agency_id, route_id, run_id):
     for nb_d in route_config.directions:
         if nb_d.tag == run_id:
             return model.RunOnRoute.from_nextbus(nb_d)
+    from proximobus import service
     raise service.NotFoundError()
     
 def handle_route_run_stops(agency_id, route_id, run_id):

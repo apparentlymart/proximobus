@@ -72,7 +72,7 @@ def memoize_in_cache(key_name, expire_time):
     def decorator(orig_func):
         def func(*args):
             if _cache is not None:
-                full_key_name = ":".join((key_name, ",".join(args)))
+                full_key_name = ":".join(("nextbus", key_name, ",".join(args)))
                 import pickle
                 cacheval = _cache.get(full_key_name)
                 if cacheval is not None:
