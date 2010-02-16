@@ -197,7 +197,7 @@ class Prediction(Object):
     @classmethod
     def from_bart(cls, b_estimate):
         ret = cls()
-        ret.route_id = None
+        ret.route_id = b_estimate.route
         ret.run_id = b_estimate.destination
         ret.minutes = b_estimate.minutes
         ret.seconds = int(b_estimate.minutes) * 60
