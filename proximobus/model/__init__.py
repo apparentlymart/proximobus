@@ -74,6 +74,15 @@ class Route(Object):
         ret.fg_color = "#"+nb_route.opposite_color
         return ret
 
+    @classmethod
+    def from_bart(cls, b_route):
+        ret = cls()
+        ret.id = b_route.number
+        ret.display_name = b_route.name
+        ret.fg_color = "#000000";
+        ret.bg_color = b_route.color
+        return ret
+
 
 class Run(Object):
     id = PrimitiveField(str)
@@ -119,6 +128,13 @@ class Stop(Object):
         ret.display_name = nb_stop.title
         ret.latitude = nb_stop.latitude
         ret.longitude = nb_stop.longitude
+        return ret
+
+    @classmethod
+    def from_bart(cls, b_stop, platform):
+        ret = cls()
+        ret.id = b_stop.abbr
+        ret.display_name = b_stop.name + " Platform " + platform
         return ret
 
 
@@ -176,4 +192,15 @@ class Prediction(Object):
         ret.seconds = nb_pred.seconds
         ret.is_departing = nb_pred.is_departing
         ret.block_id = nb_pred.block
+        return ret
+
+    @classmethod
+    def from_bart(cls, b_estimate):
+        ret = cls()
+        ret.route_id = None
+        ret.run_id = b_estimate.destination
+        ret.minutes = b_estimate.minutes
+        ret.seconds = int(b_estimate.minutes) * 60
+        ret.is_departing = False
+        ret.block_id = None
         return ret

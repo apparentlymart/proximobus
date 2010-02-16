@@ -16,6 +16,16 @@ def bart_agency(func):
     return newfunc
 
 
+# Handles the wacky way we turn stop ids into (station, platform) pairs
+def bart_stop(func):
+    def newfunc(stop_id, *args, **kwargs):
+        parts = stop_id.split("-", 2)
+        station_abbr = parts[0]
+        platform = parts[1]
+        return func(station_abbr, platform, *args, **kwargs)
+    return newfunc
+
+
 @bart_agency
 def handle_agency():
     return model.Agency.bart()
@@ -28,3 +38,26 @@ def handle_route_list():
     return model.List(ObjectField(model.RouteRef))(routes)
 
 
+@bart_agency
+def handle_route(route_id):
+    bart_route = bart.get_route_info(route_id)
+    return model.Route.from_bart(bart_route)
+
+
+@bart_agency
+@bart_stop
+def handle_single_stop(station_abbr, platform):
+    bart_station = bart.get_station_info(station_abbr)
+    if bart_station.has_platform(platform):
+        return model.Stop.from_bart(bart_station, platform)
+    else:
+        return None
+
+
+@bart_agency
+@bart_stop
+def handle_stop_predictions(station_abbr, platform, route_id = None):
+    bart_estimates = bart.get_estimates_for_platform(station_abbr, platform)
+    predictions = map(lambda b_e : model.Prediction.from_bart(b_e), bart_estimates)
+    return model.List(ObjectField(model.Prediction))(predictions)
+    
