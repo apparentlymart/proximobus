@@ -131,10 +131,15 @@ class Stop(Object):
         return ret
 
     @classmethod
-    def from_bart(cls, b_stop, platform):
+    def from_bart(cls, b_station, platform):
         ret = cls()
-        ret.id = b_stop.abbr
-        ret.display_name = b_stop.name + " Platform " + platform
+        ret.id = b_station.abbr+"-"+platform
+        direction_name = None
+        if platform in b_station.north_platforms:
+            direction_name = "Northbound"
+        else:
+            direction_name = "Southbound"
+        ret.display_name = b_station.name + " " + direction_name + " Platform " + platform
         return ret
 
 
