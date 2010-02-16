@@ -97,6 +97,15 @@ class Run(Object):
         ret.route_id = nb_dir.route.tag
         return ret
 
+    @classmethod
+    def from_bart(cls, b_route):
+        ret = cls()
+        ret.id = b_route.destination
+        ret.route_id = b_route.number
+        parts = b_route.name.split(" - ")
+        ret.display_name = "to " + parts[1]
+        return ret
+
 
 class RunOnRoute(Run):
     display_in_ui = PrimitiveField(bool)

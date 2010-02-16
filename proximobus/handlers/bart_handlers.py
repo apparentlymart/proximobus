@@ -47,6 +47,13 @@ def handle_route(route_id):
 
 
 @bart_agency
+def handle_route_runs(route_id):
+    bart_route = bart.get_route_info(route_id)
+    runs = [ model.Run.from_bart(bart_route) ]
+    return model.List(ObjectField(model.Run))(runs)
+
+
+@bart_agency
 @bart_stop
 def handle_single_stop(station_abbr, platform):
     bart_station = bart.get_station_info(station_abbr)
