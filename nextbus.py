@@ -129,7 +129,7 @@ def get_route_config(agency_tag, route_tag):
     return RouteConfig.from_elem(elem)
 
 
-@memoize_in_cache("stop_predictions", 30)
+@memoize_in_cache("stop_predictions", 10)
 def get_predictions_for_stop(agency_tag, stop_id):
     """
     Get the current predictions for a particular stop across all routes.
@@ -185,7 +185,7 @@ def get_all_vehicle_locations(agency_tag):
     return map(lambda elem : Vehicle.from_elem(elem), etree.findall("vehicle"))
 
 
-@memoize_in_cache("route_vehicles", 30)
+@memoize_in_cache("route_vehicles", 10)
 def get_vehicle_locations_on_route(agency_tag, route_tag):
     etree = fetch_nextbus_url("vehicleLocations", agency_tag, ('r', route_tag), ('t', 0))
     return map(lambda elem : Vehicle.from_elem(elem), etree.findall("vehicle"))
