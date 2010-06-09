@@ -60,7 +60,7 @@ def format_js(obj, callback_func_name):
 
 
 
-KML_PREFIX = "{http://www.opengis.net/kml/2.2}"
+KML_PREFIX = ""
 KML_DOCUMENT = KML_PREFIX+"Document"
 KML_PLACEMARK = KML_PREFIX+"Placemark"
 KML_NAME = KML_PREFIX+"name"
@@ -93,13 +93,13 @@ def add_kml_elem(obj, etree):
     pm_elem.append(coords_elem)
     p_elem.append(name_elem)
     p_elem.append(pm_elem)
-    style_elem = ElementTree.fromstring("<Style xmlns='http://www.opengis.net/kml/2.2'><IconStyle><Icon><href>http://www.nextmuni.com/googleMap/images/stopMarkerRed.gif</href></Icon><scale>0.25</scale></IconStyle></Style>")
+    style_elem = ElementTree.fromstring("<Style><IconStyle><Icon><href>http://www.nextmuni.com/googleMap/images/stopMarkerRed.gif</href></Icon><scale>0.25</scale></IconStyle></Style>")
     p_elem.append(style_elem)
     doc_elem.append(p_elem)
 
 
 def format_kml(obj):
-    etree = ElementTree.ElementTree(ElementTree.fromstring("<kml xmlns='http://www.opengis.net/kml/2.2'><Document /></kml>"))
+    etree = ElementTree.ElementTree(ElementTree.fromstring("<kml><Document /></kml>"))
     add_kml_elem(obj, etree)
     output = StringIO.StringIO()
     etree.write(output)
