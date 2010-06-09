@@ -93,6 +93,7 @@ class Run(Object):
     def from_nextbus(cls, nb_dir):
         ret = cls()
         ret.id = nb_dir.tag
+        ret.direction_name = nb_dir.name
         ret.display_name = nb_dir.title
         ret.route_id = nb_dir.route.tag
         return ret
