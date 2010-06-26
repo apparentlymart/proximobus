@@ -5,6 +5,7 @@ def main():
     request = service.Request.from_cgi_environment()
     response = handlers.handle_request(request)
     print "Content-type: "+str(response.content_type)
+    print "Access-Control-Allow-Origin: *"
     print
     print response.content
 
