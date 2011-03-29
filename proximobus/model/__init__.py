@@ -197,6 +197,9 @@ class Prediction(Object):
     seconds = PrimitiveField(float)
     is_departing = PrimitiveField(bool)
     block_id = PrimitiveField(str)
+    vehicle_id = PrimitiveField(str)
+    is_affected_by_layover = PrimitiveField(bool)
+    is_delayed = PrimitiveField(bool)
 
     @classmethod
     def from_nextbus(cls, nb_pred):
@@ -207,6 +210,10 @@ class Prediction(Object):
         ret.seconds = nb_pred.seconds
         ret.is_departing = nb_pred.is_departing
         ret.block_id = nb_pred.block
+        ret.vehicle_id = nb_pred.vehicle
+        ret.is_affected_by_layover = nb_pred.affected_by_layover
+        ret.is_delayed = nb_pred.delayed
+        
         return ret
 
     @classmethod

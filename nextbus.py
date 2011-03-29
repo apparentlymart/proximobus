@@ -163,6 +163,11 @@ def get_predictions_for_stop(agency_tag, stop_id):
                 prediction.minutes = int(prediction_elem.get("minutes"))
                 prediction.epoch_time = int(prediction_elem.get("epochTime"))
                 prediction.block = prediction_elem.get("block")
+                prediction.vehicle = prediction_elem.get("vehicle")
+                prediction.delayed = True if prediction_elem.get("delayed") else False
+                prediction.slowness = prediction_elem.get("slowness")
+                prediction.trip_tag = prediction_elem.get("tripTag")
+                prediction.affected_by_layover = True if prediction_elem.get("affectedByLayover") else False
 
                 if prediction_elem.get("isDeparture") == "true":
                     prediction.is_departing = True
@@ -381,6 +386,13 @@ class Prediction:
     epoch_time = None
     is_departing = None
     block = None
+    vehicle = None
+    trip_tag = None
+    vehicle = None
+    affected_by_layover = None
+    delayed = None
+    slowness = None
+    
     __repr__ = _standard_repr
     __init__ = _autoinit()
 
